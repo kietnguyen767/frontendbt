@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type Product = {
   _id: string;
@@ -12,11 +13,10 @@ type Product = {
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
-
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`)
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error("Fetch products error:", err));
@@ -32,7 +32,7 @@ export default function HomePage() {
     if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
         method: "DELETE",
       });
 
@@ -89,8 +89,7 @@ export default function HomePage() {
         <table className="w-full border-collapse">
           <thead className="bg-orange-100 text-left text-orange-700">
             <tr>
-              <th className="p-3 w-12">
-              </th>
+              <th className="p-3 w-12"></th>
               <th className="p-3">Tên sản phẩm</th>
               <th className="p-3">Mã sản phẩm</th>
               <th className="p-3 text-center">Hành động</th>
@@ -107,10 +106,12 @@ export default function HomePage() {
                 </td>
                 <td className="p-3 flex items-center gap-3">
                   {p.image ? (
-                    <img
+                    <Image
                       src={p.image}
                       alt={p.name}
-                      className="w-10 h-10 object-cover rounded-full"
+                      width={40}
+                      height={40}
+                      className="rounded-full object-cover"
                     />
                   ) : (
                     <div className="w-10 h-10 bg-orange-100 rounded-full" />
