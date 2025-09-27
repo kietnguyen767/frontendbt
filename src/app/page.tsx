@@ -2,8 +2,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+type Product = {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+};
+
 export default function HomePage() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
   const [search, setSearch] = useState("");
 
   useEffect(() => {
