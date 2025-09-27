@@ -1,103 +1,135 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
-export default function Home() {
+export default function HomePage() {
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/products")
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch((err) => console.error("Fetch products error:", err));
+  }, []);
+
+  // Lọc sản phẩm theo từ khóa
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Hàm xóa sản phẩm
+  const handleDelete = async (id) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setProducts(products.filter((p) => p._id !== id));
+      } else {
+        console.error("Xóa sản phẩm thất bại");
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa sản phẩm:", error);
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-orange-50">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 bg-orange-500 text-white p-4 rounded-lg shadow">
+        <h1 className="text-xl font-semibold">
+          🛒 Sản phẩm / Danh sách sản phẩm
+        </h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+        <div className="flex flex-col md:flex-row gap-3 mt-4 md:mt-0">
+          {/* Ô tìm kiếm */}
+          <div className="flex border border-orange-300 rounded-lg overflow-hidden bg-white">
+            <input
+              type="text"
+              placeholder="Nhập từ khóa tìm kiếm"
+              className="px-3 py-2 outline-none text-gray-700"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <button className="px-4 bg-orange-100 hover:bg-orange-200 text-orange-600">
+              🔍
+            </button>
+          </div>
+
+          {/* Nút lọc nâng cao */}
+          <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+            Lọc nâng cao
+          </button>
+
+          {/* Nút thêm sản phẩm */}
+          <Link
+            href="/create"
+            className="px-4 py-2 bg-white text-orange-600 font-semibold rounded-lg hover:bg-orange-100"
           >
-            Read our docs
-          </a>
+            + Cập nhật danh mục
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Bảng sản phẩm */}
+      <div className="border rounded-lg overflow-hidden shadow bg-white">
+        <table className="w-full border-collapse">
+          <thead className="bg-orange-100 text-left text-orange-700">
+            <tr>
+              <th className="p-3 w-12">
+              </th>
+              <th className="p-3">Tên sản phẩm</th>
+              <th className="p-3">Mã sản phẩm</th>
+              <th className="p-3 text-center">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredProducts.map((p) => (
+              <tr
+                key={p._id}
+                className="border-t hover:bg-orange-50 transition"
+              >
+                <td className="p-3">
+                  <input type="checkbox" />
+                </td>
+                <td className="p-3 flex items-center gap-3">
+                  {p.image ? (
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      className="w-10 h-10 object-cover rounded-full"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-orange-100 rounded-full" />
+                  )}
+                  <span className="text-gray-800">{p.name}</span>
+                </td>
+                <td className="p-3 text-orange-600 font-medium">
+                  SP{p._id.slice(-4)}
+                </td>
+                <td className="p-3 text-center space-x-2">
+                  <Link
+                    href={`/edit/${p._id}`}
+                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  >
+                    Sửa
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(p._id)}
+                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Xóa
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
