@@ -28,7 +28,7 @@ export default function HomePage() {
   );
 
   // Hàm xóa sản phẩm
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
 
     try {
